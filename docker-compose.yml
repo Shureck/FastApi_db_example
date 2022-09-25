@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+
+  web:
+    build: ./project
+#    image: shureck/forcicd:latest
+    restart: always
+
+    command: uvicorn main:app --reload --host 0.0.0.0
+
+    ports:
+      - 8180:8000
+
+    volumes:
+        - ./project:/usr/src/app/
+
+    depends_on:
+      - db
+
+  db:
+    # Образ и версия базы, которую мы будем использовать
+    restart: always
+
+    image: postgres:11.11
+    # Внешний том(volume) и место где он будет подключен внутри контейнера
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data/
+
+    ports:
+      - 5434:5432
+
+    environment:
+      # Учетные данные, которые можно будет переопределить
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=med_service
+
+volumes:
+  postgres_volume:
